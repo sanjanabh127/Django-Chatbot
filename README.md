@@ -17,6 +17,5 @@ This project focuses on **simplicity, realistic UX**, and **secure backend integ
 
 ---
 
-## Results 
 ![img_alt](https://github.com/sanjanabh127/Django-Chatbot/blob/7650c831d548e1b47c19114cd6966c840387288e/Results/Screenshot%202026-01-21%20193724.png)
 ![img_alt](https://github.com/sanjanabh127/Django-Chatbot/blob/587761136f38654d165df949a47c6cfc3c1c2048/Results/Screenshot%202026-01-21%20192155.png)
