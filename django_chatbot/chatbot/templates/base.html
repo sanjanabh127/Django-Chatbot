@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 420px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #0d6efd;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 18px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #chat-box {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 14px;
+            margin-left: 6px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="header">🤖 Chatbot</div>
+
+    <div id="chat-box"></div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+function sendMessage() {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatBox = document.getElementById("chat-box");
+
+    // Show user message
+    chatBox.innerHTML += `
+        <p><b>You:</b> ${message}</p>
+    `;
+
+    // Typing indicator
+    const typingId = "typing-" + Date.now();
+    chatBox.innerHTML += `
+        <p id="${typingId}"><b>Bot:</b> <i>typing...</i></p>
+    `;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    input.value = "";
+
+    fetch("/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: "message=" + encodeURIComponent(message)
+    })
+    .then(res => res.json())
+    .then(data => {
+        // Artificial delay for realism
+        setTimeout(() => {
+            const typingElem = document.getElementById(typingId);
+            if (typingElem) {
+                typingElem.innerHTML = `
+                    <b>Bot:</b> ${data.response}
+                `;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 800); // 👈 delay in ms
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie) {
+        document.cookie.split(';').forEach(cookie => {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        });
+    }
+    return cookieValue;
+}
+</script>
